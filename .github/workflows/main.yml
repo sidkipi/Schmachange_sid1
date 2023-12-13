@@ -50,7 +50,8 @@ jobs:
             echo "Step 2: Running schemachange for matching files"
             IFS=$'\n' # Set Internal Field Separator to newline to correctly iterate over files
             for file in ${{ steps.find_files.outputs.matching_files }}; do
-              schemachange -f "$file" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
+              cd "$(dirname "$file")" || exit 1 # Change the working directory to the directory of the file
+              schemachange -f "$(basename "$file")" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
             done
             unset IFS # Reset Internal Field Separator to default
           else
