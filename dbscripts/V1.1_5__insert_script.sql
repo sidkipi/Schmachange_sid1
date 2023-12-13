@@ -1,1 +1,1 @@
-insert into DEMO1_DB.public.fidelity_test_users values('Rohit','agarwal','2020-01-01 12:23:23');
+insert into DEMO1_DB.public.fidelity_test_users values('Rohit1','agarwal','2020-01-01 12:23:23');
