@@ -1,12 +1,14 @@
 name: showcase_cicd_snowflake
 
+# Controls when the action will run. 
 on:
   push:
     branches:
       - main
     paths:
-      - 'dbscripts/**'
+      - 'dbscripts/**' 
 
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -14,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -28,8 +31,7 @@ jobs:
           matching_files=$(find $GITHUB_WORKSPACE/dbscripts -type f -regex '.*[vV][0-9]+\.[0-9]+\.[0-9]+__[a-zA-Z0-9_]+\.sql' -print)
           echo "::set-output name=matching_files::$matching_files"
 
-      - name: Run schemachange for matching files
-        if: ${{ steps.find_files.outputs.matching_files != '' }}
+      - name: Validate and Run schemachange
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
           SF_USERNAME: ${{ secrets.SF_USERNAME }}
@@ -43,13 +45,14 @@ jobs:
           echo "Step 1: Installing schemachange"
           pip install schemachange
 
-          echo "Step 2: Running schemachange for matching files"
-          IFS=$'\n' # Set Internal Field Separator to newline to correctly iterate over files
-          for file in ${{ steps.find_files.outputs.matching_files }}; do
-            schemachange -f $file -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
-          done
-          unset IFS # Reset Internal Field Separator to default
-
-      - name: Ignore non-matching files
-        if: ${{ steps.find_files.outputs.matching_files == '' }}
-        run: echo "No matching files found. Skipping schemachange."
+          # Validate and Run schemachange for matching files
+          if [ -n "${{ steps.find_files.outputs.matching_files }}" ]; then
+            echo "Step 2: Running schemachange for matching files"
+            IFS=$'\n' # Set Internal Field Separator to newline to correctly iterate over files
+            for file in ${{ steps.find_files.outputs.matching_files }}; do
+              schemachange -f "$file" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
+            done
+            unset IFS # Reset Internal Field Separator to default
+          else
+            echo "No matching files found. Skipping schemachange."
+          fi
