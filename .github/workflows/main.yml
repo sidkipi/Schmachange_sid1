@@ -1,5 +1,6 @@
 name: showcase_cicd_snowflake
 
+# Controls when the action will run.
 on:
   push:
     branches:
@@ -15,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -23,23 +25,23 @@ jobs:
         with:
           python-version: 3.8.x
 
-      - name: Install schemachange
+      - name: Run schemachange
+        env:
+          SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
+          SF_USERNAME: ${{ secrets.SF_USERNAME }}
+          SF_ROLE: ${{ secrets.SF_ROLE }}
+          SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
+          SF_DATABASE: ${{ secrets.SF_DATABASE }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
         run: |
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          python --version
           echo "Step 1: Installing schemachange"
           pip install --upgrade schemachange
 
-- name: Run schemachange
-  env:
-    SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
-    SF_USERNAME: ${{ secrets.SF_USERNAME }}
-    SF_ROLE: ${{ secrets.SF_ROLE }}
-    SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
-    SF_DATABASE: ${{ secrets.SF_DATABASE }}
-    SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
-  run: |
-    echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-    python --version
 
+          echo "Step 2: Running schemachange"
+          
     # Use find to locate files with the specified pattern
     find "$GITHUB_WORKSPACE/dbscripts" -type f -regex '.*[vV]*\.[0-9]*\.[0-9]*__[a-zA-Z0-9_]+\.sql' | while read -r file; do
       if [[ -f "$file" ]]; then
