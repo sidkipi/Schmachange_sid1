@@ -1,6 +1,5 @@
 name: showcase_cicd_snowflake
 
-# Controls when the action will run.
 on:
   push:
     branches:
@@ -8,7 +7,6 @@ on:
     paths:
       - 'dbscripts/**'
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -16,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -26,6 +23,7 @@ jobs:
           python-version: 3.8.x
 
       - name: Run schemachange
+        if: startsWith(glob('dbscripts/**'), 'dbscripts/[vV]*.*.*__*.sql')
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
           SF_USERNAME: ${{ secrets.SF_USERNAME }}
@@ -37,17 +35,7 @@ jobs:
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           python --version
           echo "Step 1: Installing schemachange"
-          pip install --upgrade schemachange
-
-
-          echo "Step 2: Running schemachange"
+          pip install schemachange
           
-          # Run schemachange for files matching the pattern
-          for file in $GITHUB_WORKSPACE/dbscripts/*; do
-            if [[ $file =~ [vV][0-9]+\.[0-9]+\.[0-9]+__[a-zA-Z0-9_]+\.sql$ ]]; then
-              echo "Processing file: $file"
-              schemachange -f "$GITHUB_WORKSPACE/dbscripts" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
-            else
-              echo "Skipping file: $file"
-            fi
-          done
+          echo "Step 2: Running schemachange"
+          schemachange -f $GITHUB_WORKSPACE/dbscripts -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
