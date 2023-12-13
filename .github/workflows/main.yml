@@ -43,12 +43,11 @@ jobs:
           echo "Step 2: Running schemachange"
           
           # Run schemachange for files matching the pattern
-          for file in $GITHUB_WORKSPACE/dbscripts/*.sql; do
+          for file in $GITHUB_WORKSPACE/dbscripts/*; do
             if [[ $file =~ [vV][0-9]+\.[0-9]+\.[0-9]+__[a-zA-Z0-9_]+\.sql$ ]]; then
               echo "Processing file: $file"
-              schemachange -f "$file" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
+              schemachange -f "$GITHUB_WORKSPACE/dbscripts" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
             else
               echo "Skipping file: $file"
-              continue
             fi
           done
