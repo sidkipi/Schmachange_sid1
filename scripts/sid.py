@@ -11,6 +11,10 @@ for entry in os.scandir(directory):
         file_name = entry.name
         print(file_name)
         if re.match(pattern, file_name):
+            if re.match(r"^[vV]\d+\.\d+\.\d+_[a-zA-Z0-9_]+\.sql$", file_name):
+                print(f"Skipping '{file_name}' based on the restricted version format.")
+                continue
+
             print(f"File '{file_name}' matches the pattern. Proceeding with schemachange.")
             print("Running schemachange")
 
