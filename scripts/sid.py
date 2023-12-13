@@ -3,7 +3,7 @@ import re
 import subprocess
 
 directory = "dbscripts/"
-pattern = r"^[vV]\d+\.\d+\.\d+_[a-zA-Z0-9_]+\.sql$"
+pattern = r"^[vV]\d+\.\d+\.\d+_\d+_[a-zA-Z0-9_]+\.sql$"
 
 # Get a sorted list of files in the directory
 files = sorted(os.listdir(directory))
