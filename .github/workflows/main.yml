@@ -42,12 +42,12 @@ jobs:
 
           echo "Step 2: Running schemachange"
           
-    # Use find to locate files with the specified pattern
-    find "$GITHUB_WORKSPACE/dbscripts" -type f -regex '.*[vV]*\.[0-9]*\.[0-9]*__[a-zA-Z0-9_]+\.sql' | while read -r file; do
-      if [[ -f "$file" ]]; then
-        echo "Processing file: $file"
-        schemachange -f "$file" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
-      else
-        echo "Skipping file: $file. File does not match the pattern."
-      fi
-    done
+          # Run schemachange for files matching the pattern
+          for file in $GITHUB_WORKSPACE/dbscripts/*; do
+            if [[ $file =~ [vV][0-9]+\.[0-9]+\.[0-9]+__[a-zA-Z0-9_]+\.sql$ ]]; then
+              echo "Processing file: $file"
+              schemachange -f "$GITHUB_WORKSPACE/dbscripts" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
+            else
+              echo "Skipping file: $file"
+            fi
+          done
