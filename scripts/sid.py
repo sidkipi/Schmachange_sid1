@@ -1,16 +1,19 @@
 import os
 import re
 import subprocess
-import snowflake.connector
 
 directory = "dbscripts/"
 pattern = r"^[vV]\d+\.\d+\.\d+_[a-zA-Z0-9_]+\.sql$"
 
-for entry in os.scandir(directory):
-    if entry.is_file():
-        file_name = entry.name
+# Get a sorted list of files in the directory
+files = sorted(os.listdir(directory))
+
+for file_name in files:
+    full_path = os.path.join(directory, file_name)
+
+    if os.path.isfile(full_path):
         print(file_name)
-        
+
         if not re.match(pattern, file_name):
             print(f"File '{file_name}' does not match the allowed pattern. Skipping schemachange.")
             continue
