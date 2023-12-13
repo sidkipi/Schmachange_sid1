@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+import snowflake.connector
 directory = "dbscripts/"
 pattern = r"^[vV]\d+\.\d+\.\d+__[a-zA-Z0-9_]+\.sql$"
 for entry in os.scandir(directory):
