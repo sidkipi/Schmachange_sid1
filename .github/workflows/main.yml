@@ -28,6 +28,12 @@ jobs:
           matching_files=$(find $GITHUB_WORKSPACE/dbscripts -type f -regex '.*[vV][0-9]+\.[0-9]+\.[0-9]+__[a-zA-Z0-9_]+\.sql' -print)
           echo "::set-output name=matching_files::$matching_files"
 
+      - name: Set root folder
+        id: set_root_folder
+        run: |
+          root_folder=$(dirname "$(echo "${{ steps.find_files.outputs.matching_files }}" | head -n 1)")
+          echo "::set-output name=root_folder::$root_folder"
+
       - name: Run schemachange
         if: ${{ steps.find_files.outputs.matching_files != '' }}
         env:
@@ -44,7 +50,4 @@ jobs:
           pip install schemachange
           
           echo "Step 2: Running schemachange"
-          IFS=$'\n'
-          for file in ${{ steps.find_files.outputs.matching_files }}; do
-            schemachange -f $file -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
-          done
+          schemachange -r ${{ steps.set_root_folder.outputs.root_folder }} -f ${{ steps.find_files.outputs.matching_files }} -a $SF_ACCOUNT -u $SF_USERNAME -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
