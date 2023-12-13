@@ -50,4 +50,5 @@ jobs:
           pip install schemachange
           
           echo "Step 2: Running schemachange"
-          schemachange -r ${{ steps.set_root_folder.outputs.root_folder }} -f ${{ steps.find_files.outputs.matching_files }} -a $SF_ACCOUNT -u $SF_USERNAME -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
+          cd ${{ steps.set_root_folder.outputs.root_folder }}
+          schemachange -f ${{ steps.find_files.outputs.matching_files }} -a $SF_ACCOUNT -u $SF_USERNAME -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
