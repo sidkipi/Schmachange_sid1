@@ -20,18 +20,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Use Python 3.8
+      - name: Use Python 3.8.x
         uses: actions/setup-python@v2.2.1
         with:
-          python-version: 3.8
+          python-version: 3.8.x
 
-      - name: Find matching files
-        id: find_files
+      - name: Run Python Script
         run: |
-          matching_files=$(find $GITHUB_WORKSPACE/dbscripts -type f -regex '.*[vV][0-9]+\.[0-9]+\.[0-9]+__[a-zA-Z0-9_]+\.sql' -print)
-          echo "::set-output name=matching_files::$matching_files"
+         python scripts/sid.py
 
-      - name: Validate and Run schemachange
+      - name: Run schemachange
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
           SF_USERNAME: ${{ secrets.SF_USERNAME }}
@@ -44,16 +42,8 @@ jobs:
           python --version
           echo "Step 1: Installing schemachange"
           pip install schemachange
-
-          # Validate and Run schemachange for matching files
-          if [ -n "${{ steps.find_files.outputs.matching_files }}" ]; then
-            echo "Step 2: Running schemachange for matching files"
-            IFS=$'\n' # Set Internal Field Separator to newline to correctly iterate over files
-            for file in ${{ steps.find_files.outputs.matching_files }}; do
-              cd "$(dirname "$file")" || exit 1 # Change the working directory to the directory of the file
-              schemachange -f "$(basename "$file")" -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
-            done
-            unset IFS # Reset Internal Field Separator to default
-          else
-            echo "No matching files found. Skipping schemachange."
-          fi
+          
+          
+          
+          echo "Step 2: Running schemachange"
+          schemachange -f $GITHUB_WORKSPACE/dbscripts -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
