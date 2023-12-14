@@ -1,35 +1,25 @@
-import os
 import re
-import subprocess
-import snowflake.connector
 
-directory = "dbscripts/"
-pattern = r"^[vV]\d+\.\d+\.\d+\s*__[a-zA-Z0-9_]+\.sql$"
+def validate_version_format(version_string, file_name):
+    # Define the expected pattern for the version string
+    pattern = r"^V\d+\.\d+\.\d+$"
 
-for entry in os.scandir(directory):
-    if entry.is_file():
-        file_name = entry.name
-        print(file_name)
-        if not re.match(pattern, file_name):
-            print(f"Skipping '{file_name}' based on the restricted version format.")
-            continue
+    # Check if the version string matches the pattern
+    if re.match(pattern, version_string):
+        return True
+    else:
+        print(f"Invalid version string in file '{file_name}': {version_string}. Version format must be V1.1.1")
+        return False
 
-        if re.match(r"^[vV]\d+\.\d+\.\d+_\d+\s*\.sql$", file_name):
-            print(f"Skipping '{file_name}' based on the restricted version format.")
-            continue
+# Examples of version strings with corresponding file names
+versions_to_check = {"V1.1": "script1.sql", "V1_1": "script2.sql", "V1.2.3": "script3.sql", "V1_2_3": "script4.sql", "V1.2_3": "script5.sql"}
 
-        print(f"File '{file_name}' matches the pattern. Proceeding with schemachange.")
-        print("Running schemachange")
+# Process each version string
+for version, file_name in versions_to_check.items():
+    if validate_version_format(version, file_name):
+        print(f"Processing file '{file_name}' with version '{version}'")
+        # Add schemachange logic here for the valid version string
+    else:
+        print(f"Skipping file '{file_name}' due to invalid version string")
 
-        # Build the full schemachange command
-        full_command = f'schemachange -f {directory} -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table'
-
-        # Run schemachange using subprocess.run
-        result = subprocess.run(full_command, shell=True, capture_output=True, text=True)
-
-        if result.returncode == 0:
-            print("schemachange executed successfully.")
-        else:
-            print(f"Error executing schemachange. Exit code: {result.returncode}")
-            print("Output:", result.stdout)
-            print("Errors:", result.stderr)
+# Continue with the remaining files...
