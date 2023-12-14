@@ -8,7 +8,7 @@ on:
       - 'dbscripts/**'
 
 jobs:
-  check-files:
+  snowflake-cicd-showcase:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,33 +20,13 @@ jobs:
         with:
           python-version: 3.8.x
 
-      - name: Run file validation script
-        run: chmod +x scripts/sid.py
-
-      - name: Set outputs
-        id: set_outputs
+      - name: Validate file names
+        id: validate_files
         run: |
-          include_files=$(cat include_files.txt)
-          exclude_files=$(cat exclude_files.txt)
-          echo "::set-output name=include_files::$include_files"
-          echo "::set-output name=exclude_files::$exclude_files"
-
-  snowflake-cicd-showcase:
-    needs: check-files
-    runs-on: ubuntu-latest
-    if: success()
-
-    steps:
-      - name: Check if any files to include
-        run: echo "Include files:${{ needs.check-files.outputs.include_files }}"
-        id: include_check
-
-      - name: Check if any files to exclude
-        run: echo "Exclude files:${{ needs.check-files.outputs.exclude_files }}"
-        id: exclude_check
-
-      - name: Run schemachange for included files
-        if: steps.include_check.outputs.include_files != ''
+          python validate_files.py
+          
+      - name: Run schemachange
+        if: steps.validate_files.outputs.valid == 'true'
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
           SF_USERNAME: ${{ secrets.SF_USERNAME }}
@@ -59,11 +39,6 @@ jobs:
           python --version
           echo "Step 1: Installing schemachange"
           pip install schemachange
-          
-          include_files="${{ steps.include_check.outputs.include_files }}"
-          echo "Step 2: Running schemachange for included files"
-          schemachange -f $GITHUB_WORKSPACE/dbscripts -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table --include "$include_files"
 
-      - name: Skip schemachange for excluded files
-        if: steps.exclude_check.outputs.exclude_files != ''
-        run: echo "Skipping schemachange for excluded files:${{ steps.exclude_check.outputs.exclude_files }}"
+          echo "Step 2: Running schemachange"
+          schemachange -f $GITHUB_WORKSPACE/dbscripts -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
