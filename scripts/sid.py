@@ -1,25 +1,24 @@
+import os
 import re
 
 def validate_version_format(version_string, file_name):
     # Define the expected pattern for the version string
-    pattern = r"^[vV]\d+\.\d+\.\d+\s*__[a-zA-Z0-9_]+\.sql$"
+    pattern = r"^V\d+(_\d+)*\.\d+\.\d+$"
 
     # Check if the version string matches the pattern
-    if re.match(pattern, version_string):
-        return True
-    else:
-        print(f"Invalid version string in file '{file_name}': {version_string}. Version format must be V1.1.1")
-        return False
+    return bool(re.match(pattern, version_string))
 
-# Examples of version strings with corresponding file names
-versions_to_check = {"V1.1": "script1.sql", "V1_1": "script2.sql", "V1.2.3": "script3.sql", "V1_2_3": "script4.sql", "V1.2_3": "script5.sql"}
+# Directory containing SQL scripts
+directory = "dbscripts/"
 
-# Process each version string
-for version, file_name in versions_to_check.items():
-    if validate_version_format(version, file_name):
-        #print(f"Processing file '{file_name}' with version '{version}'")
-        # Add schemachange logic here for the valid version string
-    else:
-        #print(f"Skipping file '{file_name}' due to invalid version string")
+# Loop through all files in the directory
+for entry in os.scandir(directory):
+    if entry.is_file():
+        file_name = entry.name
 
-# Continue with the remaining files...
+        # Process the file
+        if validate_version_format(file_name, file_name):
+            print(f"Processing file '{file_name}' with version '{file_name}'")
+            # Add schemachange logic here for the valid version string
+        else:
+            print(f"Skipping file '{file_name}' due to invalid version string")
