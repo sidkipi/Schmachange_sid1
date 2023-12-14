@@ -21,21 +21,22 @@ jobs:
           python-version: 3.8.x
 
       - name: Validate file names
+        id: validate_files
         run: |
           for file_path in dbscripts/*.sql; do
             file_name=$(basename "$file_path")
 
             if [[ "$file_name" =~ ^[vV]\d+\.\d+\.\d+\s*__[a-zA-Z0-9_]+\.sql$|^R__[a-zA-Z]+(?:_[a-zA-Z0-9]+)+\.(sql|SQL)$ ]]; then
               echo "File '$file_name' matches the pattern."
-              echo "::set-output name=valid::true"
+              echo "valid=true" >> $GITHUB_ENV
             else
               echo "Skipping file '$file_name' based on the restricted version format."
-              echo "::set-output name=valid::false"
+              echo "valid=false" >> $GITHUB_ENV
             fi
           done
 
       - name: Run schemachange
-        if: steps.validate.outputs.valid == 'true'
+        if: env.valid == 'true'
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
           SF_USERNAME: ${{ secrets.SF_USERNAME }}
