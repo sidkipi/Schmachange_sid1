@@ -23,7 +23,7 @@ jobs:
       - name: Validate file names
         id: validate_files
         run: |
-          python validate_files.py
+          python sid.py
           
       - name: Run schemachange
         if: steps.validate_files.outputs.valid == 'true'
