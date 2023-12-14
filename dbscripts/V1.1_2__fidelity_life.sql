@@ -2,4 +2,4 @@ use database DEMO1_DB;
 use schema PUBLIC;
 
 ALTER TABLE FIDELITY_TEST_USERS
-ADD COLUMN age INT;
+ADD COLUMN number INT;
