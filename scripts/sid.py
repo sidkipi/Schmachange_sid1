@@ -3,7 +3,7 @@ import re
 
 def validate_version_format(version_string, file_name):
     # Define the expected pattern for the version string
-    pattern = r"^V\d+(_\d+)*\.\d+\.\d+$"
+    pattern = r"^[vV]\d+\.\d+\.\d+\s*__[a-zA-Z0-9_]+\.sql$"
 
     # Check if the version string matches the pattern
     return bool(re.match(pattern, version_string))
