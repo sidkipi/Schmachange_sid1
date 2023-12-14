@@ -38,11 +38,11 @@ jobs:
 
     steps:
       - name: Check if any files to include
-        run: echo "Include files: ${{ needs.check-files.outputs.include_files }}"
+        run: echo "Include files:${{ needs.check-files.outputs.include_files }}"
         id: include_check
 
       - name: Check if any files to exclude
-        run: echo "Exclude files: ${{ needs.check-files.outputs.exclude_files }}"
+        run: echo "Exclude files:${{ needs.check-files.outputs.exclude_files }}"
         id: exclude_check
 
       - name: Run schemachange for included files
@@ -66,4 +66,4 @@ jobs:
 
       - name: Skip schemachange for excluded files
         if: steps.exclude_check.outputs.exclude_files != ''
-        run: echo "Skipping schemachange for excluded files: ${{ steps.exclude_check.outputs.exclude_files }}"
+        run: echo "Skipping schemachange for excluded files:${{ steps.exclude_check.outputs.exclude_files }}"
