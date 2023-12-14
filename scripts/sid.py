@@ -4,13 +4,14 @@ import subprocess
 import snowflake.connector
 
 directory = "dbscripts/"
-pattern = r"^(?:[vV]\d+\.\d+\.\d+\s*__|[Rr]__)[a-zA-Z0-9_]+\.sql$"
+pattern = r"^[vV]\d+\.\d+\.\d+\s*__[a-zA-Z0-9_]+\.sql$"
+custom_pattern = r"^R__[a-zA-Z]+(?:_[a-zA-Z0-9]+)+\.(sql|SQL)$"
 
 for entry in os.scandir(directory):
     if entry.is_file():
         file_name = entry.name
         print(file_name)
-        if not re.match(pattern, file_name):
+        if not re.match(pattern, file_name) and not re.match(custom_pattern, file_name):
             print(f"Skipping '{file_name}' based on the restricted version format.")
             continue
 
