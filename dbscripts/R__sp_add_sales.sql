@@ -13,3 +13,6 @@ create table fidelity_users1 if not exists(
   preferences string, -- column used to store JSON type of data
   created_at timestamp
 );
+
+
+insert into DEMO1_DB.public.fidelity_test_users values('Siddharth','Agarwal','2020-01-01 12:23:23');
