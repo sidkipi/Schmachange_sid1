@@ -4,7 +4,7 @@ import subprocess
 import snowflake.connector
 
 directory = "dbscripts/"
-pattern = r"^[vV]\d+\.\d+\.\d+\s*__[a-zA-Z0-9_]+\.sql$"
+pattern = r"^(?:[vV]\d+\.\d+\.\d+\s*__|[Rr]__)[a-zA-Z0-9_]+\.sql$"
 
 for entry in os.scandir(directory):
     if entry.is_file():
