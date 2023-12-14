@@ -20,5 +20,8 @@ for entry in os.scandir(directory):
         if validate_version_format(file_name, file_name):
             print(f"Processing file '{file_name}' with version '{file_name}'")
             # Add schemachange logic here for the valid version string
+        full_command = f'schemachange -f {directory} -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table'
+        # Run schemachange using subprocess.run
+        #result = subprocess.run(full_command, shell=True, capture_output=True, text=True)
          else:
             print(f"Skipping file '{file_name}' due to invalid version string")
