@@ -2,7 +2,7 @@ import re
 
 def validate_version_format(version_string, file_name):
     # Define the expected pattern for the version string
-    pattern = r"^V\d+\.\d+\.\d+$"
+    pattern = r"^[vV]\d+\.\d+\.\d+\s*__[a-zA-Z0-9_]+\.sql$"
 
     # Check if the version string matches the pattern
     if re.match(pattern, version_string):
@@ -17,9 +17,9 @@ versions_to_check = {"V1.1": "script1.sql", "V1_1": "script2.sql", "V1.2.3": "sc
 # Process each version string
 for version, file_name in versions_to_check.items():
     if validate_version_format(version, file_name):
-        print(f"Processing file '{file_name}' with version '{version}'")
+        #print(f"Processing file '{file_name}' with version '{version}'")
         # Add schemachange logic here for the valid version string
     else:
-        print(f"Skipping file '{file_name}' due to invalid version string")
+        #print(f"Skipping file '{file_name}' due to invalid version string")
 
 # Continue with the remaining files...
