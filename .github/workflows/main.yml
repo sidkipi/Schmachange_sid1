@@ -21,7 +21,7 @@ jobs:
           python-version: 3.8.x
 
       - name: Run file validation script
-        run: scripts/sid.py
+        run: chmod +x scripts/sid.py
 
       - name: Set outputs
         id: set_outputs
