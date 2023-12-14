@@ -25,6 +25,12 @@ jobs:
         with:
           python-version: 3.8.x
 
+      - name: Install dependencies
+        run: pip install snowflake-connector-python
+
+      - name: Validate version strings
+        run: python sid.py  # Replace with your actual script filename
+
       - name: Install schemachange
         run: pip install schemachange
 
@@ -41,4 +47,4 @@ jobs:
       - name: Run Python Script
         run: |
          export SNOWFLAKE_PASSWORD
-         python scripts/sid.py
+         
