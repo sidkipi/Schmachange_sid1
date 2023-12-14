@@ -20,5 +20,5 @@ for entry in os.scandir(directory):
         if validate_version_format(file_name, file_name):
             print(f"Processing file '{file_name}' with version '{file_name}'")
             # Add schemachange logic here for the valid version string
-        else:
+         else:
             print(f"Skipping file '{file_name}' due to invalid version string")
