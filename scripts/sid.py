@@ -8,6 +8,7 @@ pattern2 = re.compile(r'^[vV]\d+\.\d+\.\d+__[a-zA-Z0-9_]+\.sql$')
 pattern3 = re.compile(r'^A__[a-zA-Z]+(?:_[a-zA-Z0-9]+)+\.(sql|SQL)$')
 
 matching_files = []
+skipped_files = []
 
 for file_name in os.listdir("dbscripts"):
     if file_name.endswith(".sql"):
@@ -15,6 +16,9 @@ for file_name in os.listdir("dbscripts"):
             print(f"File '{file_name}' matches the pattern.")
             matching_files.append(file_name)
             valid = "true"
+        else:
+            print(f"File '{file_name}' does not match the pattern. Skipping.")
+            skipped_files.append(file_name)
 
 # Set the output only if at least one file matches the pattern
 if valid == "true":
@@ -23,4 +27,5 @@ if valid == "true":
     print("Matching files:", matching_files)
 else:
     print("No matching files found. Exiting with success.")
-    sys.exit(0)
+    if skipped_files:
+        print("Skipped files:", skipped_files)
