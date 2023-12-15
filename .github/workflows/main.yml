@@ -25,7 +25,7 @@ jobs:
         run: |
           python scripts/sid.py
           
-      - name: Run schemachange
+      - name: Run schemachange with Debug Output
         if: steps.validate_files.outputs.valid == 'true'
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
@@ -40,5 +40,5 @@ jobs:
           echo "Step 1: Installing schemachange"
           pip install schemachange
 
-          echo "Step 2: Running schemachange"
-          schemachange -f $GITHUB_WORKSPACE/dbscripts -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
+          echo "Step 2: Running schemachange with Debug Output"
+          schemachange -f $GITHUB_WORKSPACE/dbscripts -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table --debug
