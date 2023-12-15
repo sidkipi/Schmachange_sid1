@@ -7,4 +7,4 @@ create table sid_test_users if not exists(
   created_at timestamp
 );
 
-insert into DEMO1_DB.public.fidelity_test_users values('payal','jindal','2020-01-01 12:23:23');
+insert into DEMO1_DB.public.sid_test_users values('payal','jindal','2020-01-01 12:23:23');
