@@ -1,6 +1,6 @@
 import os
 import re
-import requests
+
 
 valid = "false"
 pattern1 = re.compile(r'^R__[a-zA-Z]+(?:_[a-zA-Z0-9]+)+\.(sql|SQL)$')
