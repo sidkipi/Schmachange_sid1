@@ -1,9 +1,11 @@
 name: Feature Branch CI/CD for Snowflake
 
 on:
-  pull_request:
+  push:
     branches:
       - feature
+    paths:
+      - 'dbscripts/**'
 
 jobs:
   feature-branch-validation:
