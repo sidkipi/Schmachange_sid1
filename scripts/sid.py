@@ -14,13 +14,13 @@ for file_name in os.listdir("dbscripts"):
         if pattern1.match(file_name) or pattern2.match(file_name) or pattern3.match(file_name):
             print(f"File '{file_name}' matches the pattern.")
             matching_files.append(file_name)
-            valid = "true"
-
+        else:
+            print(f"File '{file_name}' does not match the pattern. Exiting with failure.")
+            sys.exit(1)
 
 if valid == "true":
     print(f"::set-output name=valid::{valid}")
-   
     print("Matching files:", matching_files)
 else:
-    print("No matching files found. Exiting with success.")
-    sys.exit(0)
+    print("No matching files found. Exiting with failure.")
+    sys.exit(1)
