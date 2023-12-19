@@ -3,7 +3,7 @@ name: Feature Branch CI/CD for Snowflake
 on:
   pull_request:
     branches:
-      - feature/*
+      - feature*
 
 jobs:
   feature-branch-validation:
