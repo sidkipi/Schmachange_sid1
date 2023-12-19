@@ -16,10 +16,10 @@ for file_name in os.listdir("dbscripts"):
             matching_files.append(file_name)
             valid = "true"
 
-# Set the output only if at least one file matches the pattern
+
 if valid == "true":
     print(f"::set-output name=valid::{valid}")
-    # Optionally, you can print the matching files for reference
+   
     print("Matching files:", matching_files)
 else:
     print("No matching files found. Exiting with success.")
