@@ -1,9 +1,8 @@
 name: showcase_cicd_snowflake
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    branches: [ main ]
     paths:
       - 'dbscripts/**'
 
