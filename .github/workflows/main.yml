@@ -24,20 +24,3 @@ jobs:
         id: validate_files
         run: |
           python scripts/sid.py
-
-  feature-branch-pr-approval:
-    runs-on: ubuntu-latest
-    needs: snowflake-cicd-showcase
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Create PR
-        uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: feature/main  # Adjust the branch name as needed
-          base: dev
-          title: "PR from feature to dev"
-          body: "This PR is automatically created by the CI/CD workflow."
