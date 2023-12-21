@@ -1,0 +1,58 @@
+name: deploy_dev
+
+on:
+  push:
+    branches: [ dev ]
+    paths:
+      - 'snowflake/**'
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+
+    environment: dev
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          path: 'de-snowflake-datawarehouse-schemachange'  # Set the desired working directory
+
+      - name: Use Python 3.8.x
+        uses: actions/setup-python@v2.2.1
+        with:
+          python-version: 3.8.x
+
+      - name: Validate file names
+        id: validate_files
+        run: |
+          python scripts/validate.py
+          
+      - name: Encode Secrets
+        run: |
+           echo "${{ secrets.SNOWFLAKE_PRIVATE_KEY }}" | base64 > private_key.p8
+           export SNOWFLAKE_PRIVATE_KEY_PATH=private_key.p8
+
+      - name: Debug Echo
+        run: |
+          echo "Contents of de-snowflake-datawarehouse-schemachange/snowflake directory:"
+          ls -R $GITHUB_WORKSPACE/de-snowflake-datawarehouse-schemachange/snowflake
+
+      - name: Run schemachange with Debug Output
+        if: steps.validate_files.outputs.valid == 'true'
+        env:
+          ENV: dev
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USERNAME: ${{ vars.SNOWFLAKE_USERNAME }}
+          SNOWFLAKE_ROLE: ${{ vars.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_DB: ${{ vars.SNOWFLAKE_DB }}
+          SNOWFLAKE_WH: ${{ vars.SNOWFLAKE_WH }}
+          SNOWFLAKE_SCHEMA: ${{ vars.SNOWFLAKE_SCHEMA }}
+          SNOWFLAKE_PRIVATE_KEY_PASSPHRASE: ${{ secrets.SNOWFLAKE_PRIVATE_KEY_PASSPHRASE }}
+        run: |
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          python --version
+          echo "Step 1: Installing schemachange"
+          pip install schemachange
+
+          echo "Step 2: Running schemachange"
+          schemachange -f $GITHUB_WORKSPACE/de-snowflake-datawarehouse-schemachange/snowflake/** -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USERNAME -r $SNOWFLAKE_ROLE -w $SNOWFLAKE_WH -c $SNOWFLAKE_DB.$SNOWFLAKE_SCHEMA.CHANGE_HISTORY --create-change-history-table
